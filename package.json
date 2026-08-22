@@ -1,6 +1,6 @@
 {
   "name": "@mambalabsdev/mcp-meta-ad-library-monitor",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MCP server for the Mamba Labs Meta Ad Library Monitor actor on Apify. Find a company active Facebook and Instagram ads through the Meta Ad Library API.",
   "type": "module",
   "bin": {
