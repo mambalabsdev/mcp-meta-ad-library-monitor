@@ -1,0 +1,49 @@
+{
+  "name": "@mambalabsdev/mcp-meta-ad-library-monitor",
+  "version": "1.0.0",
+  "description": "MCP server for the Mamba Labs Meta Ad Library Monitor actor on Apify. Find a company active Facebook and Instagram ads through the Meta Ad Library API.",
+  "type": "module",
+  "bin": {
+    "mcp-meta-ad-library-monitor": "./build/index.js"
+  },
+  "files": [
+    "build",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md"
+  ],
+  "scripts": {
+    "build": "tsc && chmod +x build/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "meta-ads",
+    "facebook",
+    "instagram",
+    "ad-library",
+    "competitive-intelligence",
+    "apify",
+    "clay"
+  ],
+  "author": "Mamba Labs <labs@mambamindsetgrowth.com>",
+  "license": "MIT",
+  "homepage": "https://apify.com/mambalabs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mambalabsdev/mcp-meta-ad-library-monitor"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.6.0"
+  },
+  "mcpName": "com.mambabuilt/mcp-meta-ad-library-monitor"
+}

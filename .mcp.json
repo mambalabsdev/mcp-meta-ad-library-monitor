@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "mamba-meta-ad-library-monitor": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@mambalabsdev/mcp-meta-ad-library-monitor"
+      ],
+      "env": {
+        "APIFY_TOKEN": "your-apify-token"
+      }
+    }
+  }
+}
