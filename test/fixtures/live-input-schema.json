@@ -1,0 +1,153 @@
+{
+  "title": "Meta Ad Library Monitor Input",
+  "description": "Give a company name or domain and your own Meta access token. Returns one row per matching ad.\n\nREAD THE COVERAGE BEFORE YOU BUY. This actor reads Meta own Ad Library Graph API, which is the only route Meta sanctions, and that API publishes two things: EVERY ad delivered to an audience in the EU, and social issue, election and politics ads WORLDWIDE. A US or UK commercial advertiser running ordinary product ads is legitimately absent, and this actor returns not_found rather than pretending otherwise. If your list is EU heavy, coverage is excellent. If it is US commercial, most rows will be empty and that is Meta's dataset, not a fault in the lookup. Free Apify plan users get 800 results per calendar month, reset monthly. Upgrade to any paid Apify plan for unlimited use: https://apify.com/pricing?fpr=mamba",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "company_domain": {
+      "title": "Company Domain",
+      "type": "string",
+      "description": "Bare company domain, for example gymshark.com. Used to derive the advertiser search term when no company name is given, and used by the identity gate to check that a matched advertiser page really is this company.",
+      "editor": "textfield",
+      "prefill": "gymshark.com"
+    },
+    "company_name": {
+      "title": "Company Name",
+      "type": "string",
+      "description": "Strongly recommended here. Meta advertiser search is a fuzzy text search over page names, so the company name is what the identity gate compares a matched page against. Without it the gate falls back to the domain stem, which is weaker.",
+      "editor": "textfield",
+      "prefill": "Gymshark"
+    },
+    "metaAccessToken": {
+      "title": "Meta Access Token",
+      "type": "string",
+      "description": "YOUR OWN Meta app access token, free to create at developers.facebook.com. REQUIRED: the Ad Library API is not open. Political and issue ad data additionally requires a verified identity on your Meta account, which is Meta requirement and not ours. Marked secret, so the value never renders on this page.",
+      "editor": "textfield",
+      "isSecret": true
+    },
+    "ad_reached_countries": {
+      "title": "Countries",
+      "type": "string",
+      "description": "Which country audiences to search. This parameter is REQUIRED by Meta and a request without it fails outright. The EU set is where the Ad Library covers ALL ads rather than only political ones, so it is the default. Sent as a string for Clay compatibility.",
+      "editor": "select",
+      "enum": [
+        "EU",
+        "GB",
+        "US",
+        "DE",
+        "FR",
+        "NL",
+        "ES",
+        "IT",
+        "IE",
+        "ALL_EU_PLUS_UK"
+      ],
+      "enumTitles": [
+        "EU (all ads covered, default)",
+        "United Kingdom",
+        "United States (political and issue ads only)",
+        "Germany",
+        "France",
+        "Netherlands",
+        "Spain",
+        "Italy",
+        "Ireland",
+        "EU plus United Kingdom"
+      ],
+      "default": "EU"
+    },
+    "ad_active_status": {
+      "title": "Ad Status",
+      "type": "string",
+      "description": "Whether to return currently running ads, stopped ads, or both. ACTIVE is the default because a currently running ad is the buying signal; ALL is what you want for a creative history or a competitive teardown. Sent as a string for Clay compatibility.",
+      "editor": "select",
+      "enum": [
+        "ACTIVE",
+        "ALL",
+        "INACTIVE"
+      ],
+      "enumTitles": [
+        "ACTIVE (currently running, default)",
+        "ALL (running and stopped)",
+        "INACTIVE (stopped only)"
+      ],
+      "default": "ACTIVE"
+    },
+    "ad_type": {
+      "title": "Ad Type",
+      "type": "string",
+      "description": "ALL returns every ad the Ad Library holds for those countries. POLITICAL_AND_ISSUE_ADS narrows to the political archive, which is the only archive that carries impressions and spend, and which requires a verified identity on your Meta account. Sent as a string for Clay compatibility.",
+      "editor": "select",
+      "enum": [
+        "ALL",
+        "POLITICAL_AND_ISSUE_ADS"
+      ],
+      "enumTitles": [
+        "ALL (every ad in the archive, default)",
+        "POLITICAL_AND_ISSUE_ADS (carries spend and impressions)"
+      ],
+      "default": "ALL"
+    },
+    "media_type": {
+      "title": "Media Type",
+      "type": "string",
+      "description": "Narrow to a creative format. Useful for a creative teardown where you only care about video, and irrelevant for a simple \"are they advertising\" check. Sent as a string for Clay compatibility.",
+      "editor": "select",
+      "enum": [
+        "ALL",
+        "IMAGE",
+        "VIDEO",
+        "MEME",
+        "NONE"
+      ],
+      "enumTitles": [
+        "ALL (default)",
+        "IMAGE",
+        "VIDEO",
+        "MEME",
+        "NONE (text only)"
+      ],
+      "default": "ALL"
+    },
+    "maxAds": {
+      "title": "Maximum Ads Per Company",
+      "type": "string",
+      "description": "How many ad rows to return per company. This is a cost dial, not a change of answer: the row always reports how many ads matched before the cap. Sent as a string for Clay compatibility.",
+      "editor": "select",
+      "enum": [
+        "10",
+        "25",
+        "50",
+        "100"
+      ],
+      "enumTitles": [
+        "10 ads",
+        "25 ads (default)",
+        "50 ads",
+        "100 ads"
+      ],
+      "default": "25"
+    },
+    "skipCache": {
+      "title": "Skip Cache",
+      "type": "string",
+      "description": "When \"false\" (default) a successful lookup is cached for seven days and reused, which costs you nothing on a repeated run. Set \"true\" to force a fresh fetch. Sent as a string for Clay compatibility.",
+      "editor": "select",
+      "enum": [
+        "false",
+        "true"
+      ],
+      "enumTitles": [
+        "false (use cache)",
+        "true (force fresh)"
+      ],
+      "default": "false"
+    },
+    "source_tag": {
+      "title": "Source Tag",
+      "type": "string",
+      "description": "Internal attribution tag set by Mamba Labs on published task examples. Not required, and nothing depends on it. Leave it empty.",
+      "editor": "textfield"
+    }
+  }
+}

@@ -48,7 +48,7 @@ Add this to your Claude Desktop config:
 
 Get your token at https://console.apify.com/account/integrations, paste it in, and restart Claude Desktop. The `find_meta_ads` tool will be available.
 
-You also need your own Meta app access token, free to create at developers.facebook.com. It is passed as a tool argument rather than an environment variable, so the model supplies it per call.
+You also need your own Meta app access token, free to create at developers.facebook.com. Set it as `META_ACCESS_TOKEN` in the same `env` block to keep it out of the chat transcript, or pass it per call as the `metaAccessToken` tool argument. With neither, the tool returns an error before any Apify run starts, so a missing token costs nothing.
 
 ## Prerequisites
 
@@ -68,7 +68,7 @@ You also need your own Meta app access token, free to create at developers.faceb
 
 - `company_domain` (optional): bare company domain, for example `gymshark.com`. Used to derive the advertiser search term when no company name is given, and used by the identity gate to check that a matched advertiser page really is this company.
 - `company_name` (optional but strongly recommended): Meta advertiser search is a fuzzy text search over page names, so the company name is what the identity gate compares a matched page against. Without it the gate falls back to the domain stem, which is weaker.
-- `metaAccessToken` (optional in the schema, required in practice): your own Meta app access token, free to create at developers.facebook.com. The Ad Library API is not open, so a search without one cannot run.
+- `metaAccessToken` (required unless `META_ACCESS_TOKEN` is set in the server environment): your own Meta app access token, free to create at developers.facebook.com. The Ad Library API is not open, so a call with neither returns an error and starts no run.
 - `ad_reached_countries` (optional): which country audiences to search. One of `EU`, `GB`, `US`, `DE`, `FR`, `NL`, `ES`, `IT`, `IE` or `ALL_EU_PLUS_UK`. Meta requires this parameter and a request without it fails outright. The EU set is where the Ad Library covers all ads rather than only political ones, so it is the default.
 - `ad_active_status` (optional): `ACTIVE`, `ALL` or `INACTIVE`. `ACTIVE` is the default because a currently running ad is the buying signal. `ALL` is what you want for a creative history or a competitive teardown.
 - `ad_type` (optional): `ALL` returns every ad the Ad Library holds for those countries. `POLITICAL_AND_ISSUE_ADS` narrows to the political archive, which is the only archive carrying impressions and spend and which requires a verified identity on your Meta account.
