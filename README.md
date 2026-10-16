@@ -14,6 +14,7 @@ An MCP server that finds a company's active Facebook and Instagram ads through t
 - [Output](#output)
 - [Example output](#example-output)
 - [Features](#features)
+- [Pricing](#pricing)
 - [Full actor documentation](#full-actor-documentation)
 - [Mamba Labs GTM Suite](#mamba-labs-gtm-suite)
 - [License](#license)
@@ -75,6 +76,7 @@ You also need your own Meta app access token, free to create at developers.faceb
 - `media_type` (optional): `ALL`, `IMAGE`, `VIDEO`, `MEME` or `NONE`. Useful for a creative teardown where you only care about video.
 - `maxAds` (optional): how many ad rows to return per company. One of `10`, `25`, `50` or `100`. This is a cost dial, not a change of answer: the row always reports how many ads matched before the cap.
 - `skipCache` (optional): when false (the default) a successful lookup is cached for seven days and reused. Set true to force a fresh fetch.
+- `max_charge_usd` (optional): spending cap for this call, in USD. The actor stops before any charge that would take the run past this amount and keeps every row already charged.
 
 ## Output
 
@@ -120,6 +122,18 @@ The tool returns the actor's flat JSON rows, one per ad, in snake_case with no n
 - Reads Meta's sanctioned Ad Library Graph API and no other route
 - A coverage note on every row, so an empty result is readable
 - Advertiser identity gate, with rejected candidates counted
+
+## Pricing
+
+You pay per event on Apify, billed to your own Apify account. Prices from the live pricing record, read 2026-10-16:
+
+| Event | Price per event (USD) | Fires when |
+| --- | --- | --- |
+| `apify-actor-start` | $0.00005 | Charged when the Actor starts running. Number of events charged depends on Actor memory (one event per GB, minimum one event). |
+| `advertiser-checked` | $0.004 on the Free plan, down to $0.0028 on higher Apify plans | Once per company for which the Ad Library was searched and a non degraded result was produced, whether or not any ads were found. An advertiser with no ads fires this once and nothing else, because looking and finding nothing is a real answer and it is the work you asked for. A degraded row, where no search ran, fires nothing. |
+| `ad-returned` | $0.002 on the Free plan, down to $0.0014 on higher Apify plans | Once per ad row actually returned, after the identity gate. Ads belonging to a page that failed the gate are not returned and are not charged: the work was done and the honest answer is that those ads are not this company. |
+
+The [actor's Apify page](https://apify.com/mambalabs/meta-ad-library-monitor) carries the current prices. Running this server consumes Apify credits.
 
 ## Full actor documentation
 
