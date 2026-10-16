@@ -5,6 +5,13 @@ import { dirname, join } from "node:path";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+// Optional per call spending cap, passed through to the actor's own max_charge_usd
+// input. The actor enforces it; this wrapper only forwards it when set.
+const MAX_CHARGE_USD = z
+    .number()
+    .min(0)
+    .optional()
+    .describe("Optional spending cap for this call, in USD, passed to the actor as max_charge_usd. The run stops before any charge that would take it past this amount and keeps every row already charged. Leave empty to rely only on the maximum charge per run set on your Apify account.");
 const here = dirname(fileURLToPath(import.meta.url));
 const pkg = JSON.parse(readFileSync(join(here, "..", "package.json"), "utf8"));
 // Distinctive UA so Apify run meta.userAgent marks MCP-originated runs.
@@ -42,7 +49,9 @@ function boolToString(v) {
 }
 // actorPath is the actor's IMMUTABLE Apify actor id, not its slug, so a Store
 // rename never breaks these calls.
-async function runActor(actorPath, actorLabel, input) {
+async function runActor(actorPath, actorLabel, input, maxChargeUsd) {
+    if (maxChargeUsd !== undefined)
+        input = { ...input, max_charge_usd: maxChargeUsd };
     if (!APIFY_TOKEN) {
         return { isError: true, content: [{ type: "text", text: "APIFY_TOKEN is not set. Create a token at https://console.apify.com/account/integrations and set it as the APIFY_TOKEN environment variable." }] };
     }
@@ -178,7 +187,7 @@ server.registerTool("find_meta_ads", {
     description: "Search the Meta Ad Library for a company's ads through Facebook's sanctioned Graph API and return ONE FLAT ROW PER AD with creative text, headline, delivery dates, the Meta surfaces it ran on and Meta's permanent snapshot URL for the rendered ad. COVERAGE IS NOT UNIVERSAL: the Ad Library holds all ads only in the EU and only political and issue ads elsewhere, so a commercial advertiser outside the EU is legitimately absent and every row carries a coverage note saying what the search could have found. Requires the caller's own Meta app access token, as the metaAccessToken argument or the META_ACCESS_TOKEN environment variable. Use it to check whether a company advertises on Facebook and Instagram right now or to pull a creative history; each call is a point in time read, so monitoring means calling it on a schedule and comparing rows. Not for organic posts or follower counts, which the brand presence mappers cover. Impressions and spend exist for political ads only and arrive as bands, so a null there is not zero spend. Read only; requires an APIFY_TOKEN and consumes Apify credits per call.",
     annotations: {
         title: "Find Meta Ads",
-        readOnlyHint: true,
+        readOnlyHint: false,
         destructiveHint: false,
         idempotentHint: true,
         openWorldHint: true,
@@ -211,8 +220,9 @@ server.registerTool("find_meta_ads", {
         skipCache: z.boolean()
             .optional()
             .describe("Default false: a successful lookup is cached for seven days and reused, which costs nothing on a repeated run. Set true to force a fresh fetch."),
+        max_charge_usd: MAX_CHARGE_USD,
     },
-}, async ({ company_domain, company_name, metaAccessToken, ad_reached_countries, ad_active_status, ad_type, media_type, maxAds, skipCache }) => {
+}, async ({ company_domain, company_name, metaAccessToken, ad_reached_countries, ad_active_status, ad_type, media_type, maxAds, skipCache, max_charge_usd }) => {
     const token = metaAccessToken ?? process.env.META_ACCESS_TOKEN;
     if (!token) {
         return { isError: true, content: [{ type: "text", text: "No Meta access token. Pass metaAccessToken, or start the server with the META_ACCESS_TOKEN environment variable. Create one free at developers.facebook.com; the Ad Library API is not open without it." }] };
@@ -227,7 +237,7 @@ server.registerTool("find_meta_ads", {
         media_type,
         maxAds,
         skipCache: boolToString(skipCache),
-    }));
+    }), max_charge_usd);
 });
 const transport = new StdioServerTransport();
 await server.connect(transport);
