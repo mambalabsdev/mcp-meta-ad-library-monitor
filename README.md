@@ -4,7 +4,7 @@
 
 <a href="https://mcprush.com/to/meta-ad-library-monitor-mcp?ref=badge"><img width="380" height="200" src="https://mcprush.com/badge/meta-ad-library-monitor-mcp/card.svg" alt="Meta Ad Library Monitor MCP server" /></a>
 
-An MCP server that finds a company's active Facebook and Instagram ads through the Meta Ad Library API. It wraps the Mamba Labs Meta Ad Library Monitor actor on Apify and returns Clay-ready flat JSON rows to any MCP client.
+An MCP server that finds a company's active Facebook and Instagram ads through the Meta Ad Library API. It wraps the Mamba Labs [Meta Ad Library Ads by Company, Graph API](https://apify.com/mambalabs/meta-ad-library-monitor) actor on Apify and returns Clay-ready flat JSON rows to any MCP client.
 
 ## What's Inside
 
